@@ -22,7 +22,7 @@
               <el-button type="primary" @click="submitForm">
                   确认修改
               </el-button>
-              <el-button @click="resetForm(formRef)">重置</el-button>
+              <el-button @click="">重置</el-button>
           </el-form-item>
       </el-form>
   </el-card>

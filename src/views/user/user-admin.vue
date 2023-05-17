@@ -15,7 +15,7 @@
       <el-pagination
           v-model:current-page="queryForm.pageNum"
           v-model:page-size="queryForm.pageSize"
-          :page-sizes="[8, 16, 24, 32]"
+          :page-sizes="[8, 12, 16, 20]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
           @size-change="handleSizeChange"
@@ -37,7 +37,7 @@ const queryForm = ref({
 const total = ref(0);
 const tableData = ref([]);
 const initUserList = async () => {
-    const res = await axios.post('user-serv/user/admin/list', queryForm.value);
+    const res = await axios.post('user-serv/admin/user/list', queryForm.value);
     tableData.value = res.data.result.userList;
     total.value = res.data.result.total;
 }

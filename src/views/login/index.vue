@@ -54,7 +54,7 @@ const handleLogin = () => {
             //         ElMessage.error("系统错误，请联系管理员")
             //     })
             try {
-                let result = await axiosUtil.post("user-serv/user/admin/login", form.value);
+                let result = await axiosUtil.post("user-serv/admin/user/login", form.value);
                 let data = result.data;
                 if (data.code == 200) {
                     window.sessionStorage.setItem("token", data.result.token);

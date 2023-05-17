@@ -2,27 +2,28 @@
     <el-card>
         <el-row :gutter="20" class="search">
             <el-col :span="7">
-                <el-input placeholder="请输入商品大类名称.." v-model="queryForm.query" clearable></el-input>
+                <el-input placeholder="请输入商品小类名称.." v-model="queryForm.query" clearable></el-input>
             </el-col>
-            <el-button type="primary" :icon="Search" @click="initBigTypeList">搜索</el-button>
-            <el-button type="primary" :icon="DocumentAdd" @click="handleDialogValue()">添加商品大类</el-button>
+            <el-col :span="7">
+                <el-select v-model="queryForm.bigTypeId" clearable placeholder="请选择所属大类..">
+                    <el-option
+                        v-for="item in bigTypeSelectList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                    ></el-option>
+                </el-select>
+            </el-col>
+            <el-button type="primary" :icon="Search" @click="initSmallTypeList">搜索</el-button>
+            <el-button type="primary" :icon="DocumentAdd" @click="handleDialogValue()">添加商品小类</el-button>
         </el-row>
         <el-table :data="tableData" stripe style="width: 100%">
             <el-table-column prop="id" label="ID" width="80" />
-            <el-table-column prop="name" label="商品大类名称" width="180" />
-            <el-table-column prop="image" label="商品大类图片" width="200">
+            <el-table-column prop="name" label="商品小类名称" width="200" />
+            <el-table-column prop="bigTypeName" label="所属大类" width="200" />
+            <el-table-column prop="remark" label="商品小类描述" />
+            <el-table-column prop="action" label="操作" width="300" >
                 <template v-slot="scope">
-                    <img :src="getServerUrl()+'image/image/bigType/'+scope.row.image"
-                         width="80" height="80" alt="can not find"/>
-                </template>
-            </el-table-column>
-            <el-table-column prop="remark" label="商品大类描述" />
-            <el-table-column prop="action" label="操作" width="300" fixed="right">
-                <template v-slot="scope">
-                    <el-button type="success"
-                               @click="handleImageDialogValue(scope.row)">
-                        更换图片
-                    </el-button>
                     <el-button type="primary" :icon="Edit"
                                @click="handleDialogValue(scope.row.id)">
                     </el-button>
@@ -43,69 +44,55 @@
         />
     </el-card>
     <Dialog v-model="dialogVisible"
-            :id="bigTypeId"
+            :id="smallTypeId"
             :dialogVisible="dialogVisible"
             :dialog-title="dialogTitle"
-            @initBigTypeList="initBigTypeList"
+            @initSmallTypeList="initSmallTypeList"
     ></Dialog>
-    <ImageDialog v-model="imageDialogVisible"
-                 :imageDialogValue="imageDialogValue"
-                 @initBigTypeList="initBigTypeList"
-    ></ImageDialog>
 </template>
 
 <script setup>
 import {ref} from 'vue';
-import {Search, DocumentAdd, Delete, Edit} from '@element-plus/icons-vue';
-import axios, {getServerUrl} from '@/util/axios';
-import Dialog from "@/views/bigType/components/dialog";
-import ImageDialog from "@/views/bigType/components/imageDialog";
+import {Search, Delete, DocumentAdd, Edit} from '@element-plus/icons-vue';
+import axios from '@/util/axios';
 import {ElMessage, ElMessageBox} from "element-plus";
+import Dialog from "@/views/smallType/components/dialog";
 
 const queryForm = ref({
     query: '',
+    bigTypeId: null,
     pageNum: 1,
     pageSize: 8
 });
 const total = ref(0);
 const tableData = ref([]);
 const dialogVisible = ref(false);
-const imageDialogVisible = ref(false);
-const bigTypeId = ref(-1);
+const smallTypeId = ref(-1);
 const dialogTitle = ref('');
-const imageDialogValue = ref({});
+const bigTypeSelectList = ref([]);
 
-const initBigTypeList = async () => {
-    const res = await axios.post('good-serv/admin/bigType/list', queryForm.value);
-    tableData.value = res.data.result.bigTypeList;
+const initSmallTypeList = async () => {
+    const res = await axios.post('good-serv/admin/smallType/list', queryForm.value);
+    tableData.value = res.data.result.smallTypeList;
     total.value = res.data.result.total;
+};
+const initBigTypeSelectList = async () => {
+    const res = await axios.get('good-serv/admin/bigType/getSelectList');
+    bigTypeSelectList.value = res.data.result;
 }
+initBigTypeSelectList();
 const handleSizeChange = (pageSize) => {
     queryForm.value.pageNum = 1;
     queryForm.value.pageSize = pageSize;
-    initBigTypeList();
+    initSmallTypeList();
 }
 const handleCurrentChange = (pageNum) => {
     queryForm.value.pageNum = pageNum;
-    initBigTypeList();
-}
-const handleDialogValue = (id) => {
-    if (id) {
-        bigTypeId.value = id;
-        dialogTitle.value = '修改商品大类';
-    } else {
-        bigTypeId.value = -1;
-        dialogTitle.value = '添加商品大类';
-    }
-    dialogVisible.value = true;
-}
-const handleImageDialogValue = (row) => {
-    imageDialogVisible.value = true;
-    imageDialogValue.value = JSON.parse(JSON.stringify(row));
+    initSmallTypeList();
 }
 const handleDelete = (id) => {
     ElMessageBox.confirm(
-        '确定要删除该商品大类吗？',
+        '确定删除该商品小类吗？',
         '系统提示',
         {
             confirmButtonText: '确定',
@@ -113,13 +100,13 @@ const handleDelete = (id) => {
             type: 'warning',
         }
     ).then(async () => {
-        let res = await axios.get('good-serv/admin/bigType/delete/' + id)
+        let res = await axios.get('good-serv/admin/smallType/delete/' + id)
         if (res.data.code === 200) {
             ElMessage({
                 type: 'success',
                 message: '删除成功',
             })
-            initBigTypeList();
+            initSmallTypeList();
         } else {
             ElMessage({
                 type: 'error',
@@ -130,8 +117,18 @@ const handleDelete = (id) => {
 
     })
 }
+const handleDialogValue = (id) => {
+    if (id) {
+        smallTypeId.value = id;
+        dialogTitle.value = '修改商品小类';
+    } else {
+        smallTypeId.value = -1;
+        dialogTitle.value = '添加商品小类';
+    }
+    dialogVisible.value = true;
+}
 
-initBigTypeList();
+initSmallTypeList();
 
 </script>
 

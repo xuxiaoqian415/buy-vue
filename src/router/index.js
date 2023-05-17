@@ -28,14 +28,24 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/user/user-wx')
       },
       {
-        path: '/order',
-        name: '订单管理',
-        component: () => import(/* webpackChunkName: "about" */ '../views/order/index')
-      },
-      {
         path: '/bigType',
         name: '商品大类',
         component: () => import(/* webpackChunkName: "about" */ '../views/bigType/index')
+      },
+      {
+        path: '/smallType',
+        name: '商品小类',
+        component: () => import(/* webpackChunkName: "about" */ '../views/smallType/index')
+      },
+      {
+        path: '/goods',
+        name: '商品管理',
+        component: () => import(/* webpackChunkName: "about" */ '../views/goods/index')
+      },
+      {
+        path: '/order',
+        name: '订单管理',
+        component: () => import(/* webpackChunkName: "about" */ '../views/order/index')
       },
       {
         path: '/modifyPassword',

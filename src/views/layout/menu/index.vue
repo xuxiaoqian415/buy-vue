@@ -39,7 +39,7 @@
                 <span>商品小类管理</span>
             </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="good">
+        <el-menu-item index="goods">
             <el-icon><Goods /></el-icon>
             <span>商品管理</span>
         </el-menu-item>

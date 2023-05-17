@@ -1,9 +1,11 @@
 // 引入axios
 import axios from 'axios';
 
+let baseUrl = "http://localhost:9500/"
+
 // 创建axios实例
 const httpService = axios.create({
-  baseURL:'http://localhost:9500/',
+  baseURL: baseUrl,
   // 请求超时时间
   timeout: 3000 // 需自定义
 });
@@ -94,4 +96,8 @@ export default {
   get,
   post,
   fileUpload
+}
+
+export function getServerUrl() {
+  return baseUrl;
 }
