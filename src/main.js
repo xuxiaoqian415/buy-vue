@@ -8,5 +8,7 @@ import '././assets/styles/border.css'
 import '././assets/styles/reset.css'
 import SvgIcon from '@/icons'
 import '@/router/permission.js'
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
-createApp(App).use(store).use(router).use(ElementPlus).use(SvgIcon).mount('#app')
+createApp(App).use(store).use(router).use(ElementPlus).use(SvgIcon).component('QuillEditor', QuillEditor).mount('#app')

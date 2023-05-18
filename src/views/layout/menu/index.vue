@@ -6,6 +6,7 @@
             default-active="home"
             text-color="#fff"
             router
+            :default-openeds="['goods_type', 'goods_manage']"
     >
         <el-menu-item index="home">
             <el-icon><home-filled /></el-icon>
@@ -25,7 +26,7 @@
                 <span>微信用户</span>
             </el-menu-item>
         </el-sub-menu>
-        <el-sub-menu index="good_type">
+        <el-sub-menu index="goods_type">
             <template #title >
                 <el-icon><management /></el-icon>
                 <span>商品类别管理</span>
@@ -39,13 +40,31 @@
                 <span>商品小类管理</span>
             </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="goods">
-            <el-icon><Goods /></el-icon>
-            <span>商品管理</span>
-        </el-menu-item>
+        <el-sub-menu index="goods_manage">
+            <template #title >
+                <el-icon><management /></el-icon>
+                <span>商品管理</span>
+            </template>
+            <el-menu-item index="goods">
+                <el-icon><management /></el-icon>
+                <span>菜品管理</span>
+            </el-menu-item>
+            <el-menu-item index="ingredients">
+                <el-icon><management /></el-icon>
+                <span>原料管理</span>
+            </el-menu-item>
+            <el-menu-item index="goods-ingredient">
+                <el-icon><management /></el-icon>
+                <span>菜品原料管理</span>
+            </el-menu-item>
+        </el-sub-menu>
         <el-menu-item index="order">
             <el-icon><tickets /></el-icon>
             <span>订单管理</span>
+        </el-menu-item>
+        <el-menu-item index="purchase">
+            <el-icon><tickets /></el-icon>
+            <span>采购管理</span>
         </el-menu-item>
         <el-sub-menu index="system">
             <template #title >

@@ -4,6 +4,23 @@
             <el-col :span="7">
                 <el-input placeholder="请输入订单号.." v-model="queryForm.query" clearable></el-input>
             </el-col>
+            <el-col :span="5">
+                <el-select v-model="queryForm.status" clearable placeholder="请选择订单状态">
+                    <el-option label="待付款" value="1"></el-option>
+                    <el-option label="待发货" value="2"></el-option>
+                    <el-option label="已发货" value="3"></el-option>
+                    <el-option label="已完成" value="4"></el-option>
+                    <el-option label="退款中" value="5"></el-option>
+                    <el-option label="已退款" value="6"></el-option>
+                </el-select>
+            </el-col>
+            <el-date-picker
+                v-model="queryForm.dateValue"
+                type="date"
+                placeholder="选择预订配送日期"
+                format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD"
+            />&nbsp;&nbsp;&nbsp;&nbsp;
             <el-button type="primary" :icon="Search" @click="initOrderList">搜索</el-button>
         </el-row>
         <el-table :data="tableData" stripe style="width: 100%">
@@ -11,6 +28,7 @@
             <el-table-column prop="nickName" label="用户昵称" width="120" />
             <el-table-column prop="totalPrice" label="订单总价" width="120" />
             <el-table-column prop="status" label="订单状态" width="100" :formatter="orderStatusFormatter"/>
+            <el-table-column prop="deliveryDate" label="预订配送日期" width="120" />
             <el-table-column prop="createTime" label="订单创建日期" width="180" />
             <el-table-column prop="payDate" label="订单支付日期" width="180" />
             <el-table-column prop="consignee" label="收货人" width="100" />
@@ -61,6 +79,8 @@ import Dialog from "@/views/order/components/dialog";
 
 const queryForm = ref({
     query: '',
+    status: '',
+    dateValue: '',
     pageNum: 1,
     pageSize: 8
 });

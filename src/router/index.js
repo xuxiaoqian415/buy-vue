@@ -39,13 +39,28 @@ const routes = [
       },
       {
         path: '/goods',
-        name: '商品管理',
+        name: '菜品管理',
         component: () => import(/* webpackChunkName: "about" */ '../views/goods/index')
+      },
+      {
+        path: '/ingredients',
+        name: '原料管理',
+        component: () => import(/* webpackChunkName: "about" */ '../views/ingredients/index')
+      },
+      {
+        path: '/goods-ingredient',
+        name: '菜品原料管理',
+        component: () => import(/* webpackChunkName: "about" */ '../views/goods-ingredient/index')
       },
       {
         path: '/order',
         name: '订单管理',
         component: () => import(/* webpackChunkName: "about" */ '../views/order/index')
+      },
+      {
+        path: '/purchase',
+        name: '采购管理',
+        component: () => import(/* webpackChunkName: "about" */ '@/views/purchase/index')
       },
       {
         path: '/modifyPassword',

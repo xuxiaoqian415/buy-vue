@@ -1,7 +1,7 @@
 <template>
   <el-dialog
-    model-value="imageDialogVisible"
-    title="首图更换"
+    model-value="swiperImageDialogVisible"
+    title="首页轮播设置"
     width="30%"
     @close="handleClose"
     center
@@ -9,13 +9,17 @@
       <el-form
         ref="formRef"
         :model="form"
+        :rules="rules"
         label-width="100px"
         style="text-align: center"
       >
+          <el-form-item label="排列序号" prop="swiperSort">
+              <el-input v-model="form.swiperSort" style="width: 100px"/>
+          </el-form-item>
           <el-upload
               :headers="headers"
               class="avatar-uploader"
-              :action="getServerUrl()+'good-serv/admin/product/uploadImage/1'"
+              :action="getServerUrl()+'good-serv/admin/product/uploadImage/2'"
               :show-file-list="false"
               :before-upload="beforeAvatarUpload"
               :on-success="handleAvatarSuccess"
@@ -46,11 +50,25 @@ const props = defineProps(
             required: true
         }
     }
-)
+);
 const formRef = ref(null);
 const form = ref({
     id: -1,
-    proPic: ''
+    swiperPic: '',
+    swiperSort: 0
+});
+const rules=ref({
+    swiperSort: [
+        {
+            required: true,
+            message: '请输入排列序号'
+        },
+        {
+            type:'number',
+            message: '排序序号必须是数值类型',
+            transform: (value) => Number(value)
+        }
+    ]
 });
 const imageUrl = ref("");
 const headers = ref({
@@ -61,7 +79,7 @@ watch(
     () => props.imageDialogValue,
     () => {
         form.value = props.imageDialogValue;
-        imageUrl.value = getServerUrl()+'image/image/product/' + form.value.proPic
+        imageUrl.value = getServerUrl()+'image/image/swiper/' + form.value.swiperPic
     },
     {deep:true, immediate:true}
 )
@@ -79,19 +97,23 @@ const beforeAvatarUpload = (file) => {
 const handleAvatarSuccess = (res) => {
     console.log(res)
     imageUrl.value = getServerUrl() + res.result.src;
-    form.value.proPic = res.result.imageName;
+    form.value.swiperPic = res.result.imageName;
 }
 const emits = defineEmits(['update:modelValue','initProductList']);
 const handleConfirm = async () => {
-    let res = await axios.post('good-serv/admin/product/save', form.value);
-    if (res.data.code === 200) {
-        ElMessage.success("执行成功！");
-        formRef.value.resetFields();
-        emits('initProductList');
-        handleClose();
-    } else {
-        ElMessage.error(res.data.msg);
-    }
+    formRef.value.validate(async(valid)=>{
+        if(valid){
+            let res = await axios.post('good-serv/admin/product/save', form.value);
+            if (res.data.code === 200) {
+                ElMessage.success("执行成功！");
+                formRef.value.resetFields();
+                emits('initProductList');
+                handleClose();
+            } else {
+                ElMessage.error(res.data.msg);
+            }
+        }
+    })
 }
 const handleClose = () => {
     formRef.value.resetFields();
