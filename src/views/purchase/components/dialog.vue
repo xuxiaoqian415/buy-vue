@@ -6,7 +6,6 @@
         @close="handleClose"
         center
     >
-        <el-text class="mx-1" size="large">预订配送日期: {{props.date}}</el-text>
         <el-table :data="tableData" stripe style="width: 100%">
             <el-table-column type="index" width="50" />
             <el-table-column prop="ingredientName" label="原料名称" width="120" />
@@ -14,12 +13,19 @@
             <el-table-column prop="unit" label="单位" width="100" />
             <el-table-column prop="description" label="描述" width="180" />
         </el-table>
+        <template #footer>
+          <span class="dialog-footer">
+              <el-text class="mx-1" size="large">预订配送日期: {{props.date}}</el-text>&nbsp;&nbsp;
+              <el-button type="primary" @click="handleDownload">下载(Excel)</el-button>
+          </span>
+        </template>
     </el-dialog>
 </template>
 
 <script setup>
 import {defineEmits, defineProps, ref, watch} from "vue";
 import axios from "@/util/axios";
+import * as XLSX from 'xlsx'
 
 const props = defineProps(
     {
@@ -36,7 +42,24 @@ const props = defineProps(
     }
 );
 const tableData = ref([]);
+const exportData = ref([]);
 
+const handleDownload = () => {
+    exportData.value = tableData.value.map(
+        function (row) {
+            return {
+                '原料名称': row.ingredientName,
+                '总数': row.totalNum,
+                '单位': row.unit,
+                '描述': row.description
+            }
+        }
+    );
+    const data = XLSX.utils.json_to_sheet(exportData.value)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, data, props.date + '采购单')
+    XLSX.writeFile(wb,'采购单.xlsx')
+}
 const initPurchaseList = async () => {
     const res = await axios.post('order-serv/admin/purchase/getListByDate?date=' + props.date);
     tableData.value = res.data.result;
