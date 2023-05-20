@@ -7,7 +7,8 @@
             <el-col :span="5">
                 <el-select v-model="queryForm.status" clearable placeholder="请选择订单状态">
                     <el-option label="待付款" value="1"></el-option>
-                    <el-option label="待发货" value="2"></el-option>
+                    <el-option label="已付款待采购" value="2"></el-option>
+                    <el-option label="已采购" value="7"></el-option>
                     <el-option label="已发货" value="3"></el-option>
                     <el-option label="已完成" value="4"></el-option>
                     <el-option label="退款中" value="5"></el-option>
@@ -22,6 +23,7 @@
                 value-format="YYYY-MM-DD"
             />&nbsp;&nbsp;&nbsp;&nbsp;
             <el-button type="primary" :icon="Search" @click="initOrderList">搜索</el-button>
+            <el-button type="primary" :icon="StarFilled" @click="handleUpdateByDate">根据预订日期一键采购</el-button>
         </el-row>
         <el-table :data="tableData" stripe style="width: 100%">
             <el-table-column prop="orderNo" label="订单号" width="220" fixed/>
@@ -41,7 +43,7 @@
                         详情
                     </el-button>
                     <el-button type="primary"
-                               :disabled="scope.row.status == '2' ? false : true"
+                               :disabled="scope.row.status == '7' ? false : true"
                                @click="handleChangeStatus(scope.row.id, '3')">
                         发货
                     </el-button>
@@ -72,7 +74,7 @@
 
 <script setup>
 import {ref} from 'vue';
-import {Search, Delete} from '@element-plus/icons-vue';
+import {Search, Delete, StarFilled} from '@element-plus/icons-vue';
 import axios from '@/util/axios';
 import {ElMessage, ElMessageBox} from "element-plus";
 import Dialog from "@/views/order/components/dialog";
@@ -109,7 +111,7 @@ const orderStatusFormatter = (row) => {
         case '1':
             return "待支付"
         case '2':
-            return "待发货"
+            return "已付款待采购"
         case '3':
             return "已发货"
         case '4':
@@ -118,6 +120,8 @@ const orderStatusFormatter = (row) => {
             return "退款中"
         case '6':
             return "已退款"
+        case '7':
+            return "已采购"
     }
 }
 const handleChangeStatus = (id,status) => {
@@ -162,6 +166,41 @@ const handleDelete = (id) => {
             ElMessage({
                 type: 'success',
                 message: '删除成功',
+            })
+            initOrderList();
+        } else {
+            ElMessage({
+                type: 'error',
+                message: res.data.msg,
+            })
+        }
+    }).catch(() => {
+
+    })
+}
+const handleUpdateByDate = () => {
+    const date = queryForm.value.dateValue;
+    if (date === '' || date === null) {
+        ElMessage({
+            type: 'error',
+            message: '请选择预订配送日期',
+        })
+        return;
+    }
+    ElMessageBox.confirm(
+        '确定更新该日期下所有有效订单为已采购状态吗？',
+        '系统提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    ).then(async () => {
+        let res = await axios.get('order-serv/admin/purchase/update/toPurchased/'+date)
+        if (res.data.code === 200) {
+            ElMessage({
+                type: 'success',
+                message: '执行成功',
             })
             initOrderList();
         } else {

@@ -13,6 +13,7 @@
             />&nbsp;&nbsp;
             <el-button type="primary" :icon="Search" @click="initPurchaseList">搜索</el-button>
             <el-button type="primary" :icon="Download" @click="handleDownload">按日期导出采购单</el-button>
+            <el-button type="primary" :icon="StarFilled" @click="handleUpdateByDate">根据预订日期一键采购</el-button>
         </el-row>
         <el-table :data="tableData" stripe style="width: 100%">
             <el-table-column prop="orderNo" label="订单号" width="220" fixed/>
@@ -41,9 +42,9 @@
 
 <script setup>
 import {ref} from 'vue';
-import {Search, Download} from '@element-plus/icons-vue';
+import {Search, Download, StarFilled} from '@element-plus/icons-vue';
 import axios from '@/util/axios';
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 import Dialog from "@/views/purchase/components/dialog.vue";
 
 const queryForm = ref({
@@ -83,6 +84,42 @@ const handleCurrentChange = (pageNum) => {
     queryForm.value.pageNum = pageNum;
     initPurchaseList();
 }
+const handleUpdateByDate = () => {
+    const date = queryForm.value.dateValue;
+    if (date === '' || date === null) {
+        ElMessage({
+            type: 'error',
+            message: '请选择预订配送日期',
+        })
+        return;
+    }
+    ElMessageBox.confirm(
+        '确定更新该日期下所有有效订单为已采购状态吗？',
+        '系统提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    ).then(async () => {
+        let res = await axios.get('order-serv/admin/purchase/update/toPurchased/'+date)
+        if (res.data.code === 200) {
+            ElMessage({
+                type: 'success',
+                message: '执行成功',
+            })
+            initPurchaseList();
+        } else {
+            ElMessage({
+                type: 'error',
+                message: res.data.msg,
+            })
+        }
+    }).catch(() => {
+
+    })
+}
+
 initPurchaseList();
 
 </script>

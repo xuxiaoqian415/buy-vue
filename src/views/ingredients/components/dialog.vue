@@ -17,6 +17,8 @@
             <el-form-item label="原料单位" prop="unit">
                 <el-select v-model="form.unit" placeholder="请选择..">
                     <el-option label="克" value="g"></el-option>
+                    <el-option label="个" value="个"></el-option>
+                    <el-option label="只" value="只"></el-option>
                     <el-option label="份" value="份"></el-option>
                     <el-option label="斤" value="斤"></el-option>
                     <el-option label="千克" value="kg"></el-option>
